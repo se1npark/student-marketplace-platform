@@ -78,10 +78,6 @@ flutter run --dart-define=DEMO_BACKEND=true
 
 The implementation covers authentication, Firestore-ready remote data, listing CRUD, location and photo device services, separated project structure, and tests for auth validation, create/edit/delete/search/detail flows, repositories, controller logic, and model mapping.
 
-## App Store Submission
-
-The COMP3130 App Store copy, reviewer instructions and data collection notes are in `docs/app_store_submission.md`. iPhone-sized screenshots and the public submission page are uploaded separately through the COMP3130 App Store site.
-
 ## Marker Notes
 
 The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. The Firebase app configuration is present; the Firebase Console still needs Email/Password authentication, the marker account, and Cloud Firestore enabled before live marking.
