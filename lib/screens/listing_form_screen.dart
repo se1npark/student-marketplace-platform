@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/app_controller.dart';
 import '../models/listing.dart';
+import '../services/device_service.dart';
 import '../widgets/listing_image.dart';
 
 class ListingFormScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
   late String _condition;
   ListingLocation? _location;
   String? _imagePath;
+  PickedListingPhoto? _pickedPhoto;
 
   bool get _editing => widget.listing != null;
 
@@ -242,15 +244,28 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
   }
 
   Future<void> _pickPhoto() async {
-    final path = await context.read<AppController>().pickPhotoPath();
-    if (path != null && mounted) {
-      setState(() => _imagePath = path);
+    final photo = await context.read<AppController>().pickListingPhoto();
+    if (photo != null && mounted) {
+      setState(() {
+        _pickedPhoto = photo;
+        _imagePath = photo.path;
+      });
     }
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) {
       return;
+    }
+
+    final controller = context.read<AppController>();
+    var imagePath = _imagePath;
+    final pickedPhoto = _pickedPhoto;
+    if (pickedPhoto != null) {
+      imagePath = await controller.uploadListingPhoto(pickedPhoto);
+      if (imagePath == null) {
+        return;
+      }
     }
 
     final draft = ListingDraft(
@@ -260,10 +275,9 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
       condition: _condition,
       price: double.parse(_priceController.text.trim()),
       location: _location,
-      imagePath: _imagePath,
+      imagePath: imagePath,
     );
 
-    final controller = context.read<AppController>();
     final success = _editing
         ? await controller.updateListing(widget.listing!.id, draft)
         : await controller.createListing(draft);

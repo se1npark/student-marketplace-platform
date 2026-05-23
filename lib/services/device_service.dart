@@ -6,7 +6,7 @@ import '../models/listing.dart';
 abstract class DeviceService {
   Future<ListingLocation> currentLocation();
 
-  Future<String?> pickListingPhoto();
+  Future<PickedListingPhoto?> pickListingPhoto();
 }
 
 class DeviceServiceImpl implements DeviceService {
@@ -46,14 +46,37 @@ class DeviceServiceImpl implements DeviceService {
   }
 
   @override
-  Future<String?> pickListingPhoto() async {
+  Future<PickedListingPhoto?> pickListingPhoto() async {
     final image = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1600,
       imageQuality: 82,
     );
-    return image?.path;
+    if (image == null) {
+      return null;
+    }
+
+    return PickedListingPhoto(
+      path: image.path,
+      name: image.name,
+      mimeType: image.mimeType,
+      bytes: await image.readAsBytes(),
+    );
   }
+}
+
+class PickedListingPhoto {
+  const PickedListingPhoto({
+    required this.path,
+    required this.name,
+    required this.bytes,
+    this.mimeType,
+  });
+
+  final String path;
+  final String name;
+  final List<int> bytes;
+  final String? mimeType;
 }
 
 class DeviceException implements Exception {

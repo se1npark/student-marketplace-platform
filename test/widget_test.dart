@@ -4,6 +4,7 @@ import 'package:campus_cart/models/listing.dart';
 import 'package:campus_cart/repositories/memory_auth_repository.dart';
 import 'package:campus_cart/repositories/memory_listing_repository.dart';
 import 'package:campus_cart/services/device_service.dart';
+import 'package:campus_cart/services/listing_photo_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,6 +17,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
 
@@ -35,6 +37,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
 
@@ -79,6 +82,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
 
@@ -125,6 +129,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
 
@@ -207,5 +212,12 @@ class _FakeDeviceService implements DeviceService {
   }
 
   @override
-  Future<String?> pickListingPhoto() async => '/tmp/calculator.png';
+  Future<PickedListingPhoto?> pickListingPhoto() async {
+    return const PickedListingPhoto(
+      path: '/tmp/calculator.png',
+      name: 'calculator.png',
+      bytes: <int>[1, 2, 3],
+      mimeType: 'image/png',
+    );
+  }
 }

@@ -8,12 +8,14 @@ import 'repositories/listing_repository.dart';
 import 'repositories/memory_auth_repository.dart';
 import 'repositories/memory_listing_repository.dart';
 import 'services/device_service.dart';
+import 'services/listing_photo_storage.dart';
 
 class AppDependencies {
   const AppDependencies({
     required this.authRepository,
     required this.listingRepository,
     required this.deviceService,
+    required this.photoStorage,
     required this.usingDemoBackend,
     this.startupNotice,
   });
@@ -21,6 +23,7 @@ class AppDependencies {
   final AuthRepository authRepository;
   final ListingRepository listingRepository;
   final DeviceService deviceService;
+  final ListingPhotoStorage photoStorage;
   final bool usingDemoBackend;
   final String? startupNotice;
 }
@@ -34,6 +37,7 @@ Future<AppDependencies> buildDependencies() async {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: deviceService,
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
       startupNotice: 'Demo backend selected with DEMO_BACKEND.',
     );
@@ -46,6 +50,7 @@ Future<AppDependencies> buildDependencies() async {
         authRepository: MemoryAuthRepository.withDemoUser(),
         listingRepository: MemoryListingRepository.withSeedData(),
         deviceService: deviceService,
+        photoStorage: MemoryListingPhotoStorage(),
         usingDemoBackend: true,
         startupNotice: 'Firebase options are placeholders.',
       );
@@ -59,6 +64,7 @@ Future<AppDependencies> buildDependencies() async {
       authRepository: FirebaseAuthRepository(),
       listingRepository: FirestoreListingRepository(),
       deviceService: deviceService,
+      photoStorage: FirebaseListingPhotoStorage(),
       usingDemoBackend: false,
     );
   } catch (error) {
@@ -66,6 +72,7 @@ Future<AppDependencies> buildDependencies() async {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: deviceService,
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
       startupNotice: 'Firebase could not start: $error',
     );

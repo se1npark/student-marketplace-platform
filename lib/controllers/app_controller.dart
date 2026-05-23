@@ -7,17 +7,20 @@ import '../models/listing.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/listing_repository.dart';
 import '../services/device_service.dart';
+import '../services/listing_photo_storage.dart';
 
 class AppController extends ChangeNotifier {
   AppController({
     required AuthRepository authRepository,
     required ListingRepository listingRepository,
     required DeviceService deviceService,
+    required ListingPhotoStorage photoStorage,
     required this.usingDemoBackend,
     this.startupNotice,
   }) : _authRepository = authRepository,
        _listingRepository = listingRepository,
-       _deviceService = deviceService {
+       _deviceService = deviceService,
+       _photoStorage = photoStorage {
     _authSubscription = _authRepository.authStateChanges().listen((user) {
       _user = user;
       notifyListeners();
@@ -35,6 +38,7 @@ class AppController extends ChangeNotifier {
   final AuthRepository _authRepository;
   final ListingRepository _listingRepository;
   final DeviceService _deviceService;
+  final ListingPhotoStorage _photoStorage;
   final bool usingDemoBackend;
   final String? startupNotice;
 
@@ -154,8 +158,20 @@ class AppController extends ChangeNotifier {
     return result;
   }
 
-  Future<String?> pickPhotoPath() {
-    return _runValue<String?>(_deviceService.pickListingPhoto);
+  Future<PickedListingPhoto?> pickListingPhoto() {
+    return _runValue<PickedListingPhoto?>(_deviceService.pickListingPhoto);
+  }
+
+  Future<String?> uploadListingPhoto(PickedListingPhoto photo) {
+    final owner = _user;
+    if (owner == null) {
+      _setError(const ListingException('Please sign in again.'));
+      return Future.value(null);
+    }
+
+    return _runValue(
+      () => _photoStorage.uploadListingPhoto(photo: photo, owner: owner),
+    );
   }
 
   Future<bool> _run(Future<void> Function() action) async {

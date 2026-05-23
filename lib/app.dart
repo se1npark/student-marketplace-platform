@@ -18,6 +18,7 @@ class CampusCartApp extends StatelessWidget {
         authRepository: dependencies.authRepository,
         listingRepository: dependencies.listingRepository,
         deviceService: dependencies.deviceService,
+        photoStorage: dependencies.photoStorage,
         usingDemoBackend: dependencies.usingDemoBackend,
         startupNotice: dependencies.startupNotice,
       ),

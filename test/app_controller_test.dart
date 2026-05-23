@@ -3,6 +3,7 @@ import 'package:campus_cart/models/listing.dart';
 import 'package:campus_cart/repositories/memory_auth_repository.dart';
 import 'package:campus_cart/repositories/memory_listing_repository.dart';
 import 'package:campus_cart/services/device_service.dart';
+import 'package:campus_cart/services/listing_photo_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,6 +12,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
     await pumpEventQueue();
@@ -29,6 +31,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
     await pumpEventQueue();
@@ -49,6 +52,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
     await pumpEventQueue();
@@ -74,6 +78,7 @@ void main() {
         authRepository: MemoryAuthRepository.withDemoUser(),
         listingRepository: MemoryListingRepository.withSeedData(),
         deviceService: _FakeDeviceService(),
+        photoStorage: MemoryListingPhotoStorage(),
         usingDemoBackend: true,
       );
       await pumpEventQueue();
@@ -102,6 +107,7 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
     await pumpEventQueue();
@@ -126,14 +132,15 @@ void main() {
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
       deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
     );
 
     final location = await controller.captureLocation();
-    final photoPath = await controller.pickPhotoPath();
+    final photo = await controller.pickListingPhoto();
 
     expect(location?.label, 'Library lawn');
-    expect(photoPath, '/tmp/calculator.png');
+    expect(photo?.path, '/tmp/calculator.png');
     controller.dispose();
   });
 }
@@ -149,5 +156,12 @@ class _FakeDeviceService implements DeviceService {
   }
 
   @override
-  Future<String?> pickListingPhoto() async => '/tmp/calculator.png';
+  Future<PickedListingPhoto?> pickListingPhoto() async {
+    return const PickedListingPhoto(
+      path: '/tmp/calculator.png',
+      name: 'calculator.png',
+      bytes: <int>[1, 2, 3],
+      mimeType: 'image/png',
+    );
+  }
 }

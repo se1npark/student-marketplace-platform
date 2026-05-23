@@ -2,7 +2,7 @@
 
 **Tagline:** Buy, sell, and swap useful things around Macquarie's Wallumattagal Campus.
 
-Campus Cart is a Flutter marketplace app for students who want a safer, smaller alternative to large public resale sites. The app focuses on everyday Macquarie exchanges: COMP3130 notes near 1 Central Courtyard, food and coffee items around The Hub, chargers and study equipment near the Library, umbrellas for Metro walks, and student-to-student services such as app testing swaps. A student can sign in, search and filter current listings, open a detailed listing page, save useful listings, create their own listing, attach a campus pickup point, optionally attach a photo path, edit the listing later, and delete it when it is sold.
+Campus Cart is a Flutter marketplace app for students who want a safer, smaller alternative to large public resale sites. The app focuses on everyday Macquarie exchanges: COMP3130 notes near 1 Central Courtyard, food and coffee items around The Hub, chargers and study equipment near the Library, umbrellas for Metro walks, and student-to-student services such as app testing swaps. A student can sign in, search and filter current listings, open a detailed listing page, save useful listings, create their own listing, attach a campus pickup point, upload a listing photo, edit the listing later, and delete it when it is sold.
 
 The app is a focused major project demonstration rather than a full commercial product. Its main data entity is a `Listing`, stored through a repository layer that supports create, read, update, and delete operations. Firebase Authentication and Cloud Firestore are configured for live marking, with an in-memory demo backend still available for offline testing.
 
@@ -14,9 +14,9 @@ The app is a focused major project demonstration rather than a full commercial p
 - Listing detail screen with image, price, seller, pickup point, save toggle, edit and delete actions.
 - Category filters for Textbooks, Food, Electronics, Services, and Other.
 - Create, edit, and delete listing flows with validation, confirmation dialogs, loading states and success messages.
-- Listing fields for title, description, category, condition, price, seller, contact email, optional image path, and optional location.
+- Listing fields for title, description, category, condition, price, seller, contact email, hosted photo URL, and optional location.
 - Mobile device service integration through current device location using `geolocator`.
-- Optional photo selection using `image_picker`.
+- Optional photo selection using `image_picker`, uploaded to Firebase Storage so photos render across devices.
 - Unit and widget tests that run with `flutter test`, including interaction tests.
 - MQ-specific seed listings, generated item images, campus pickup labels, and a marketplace header image sourced from the Macquarie University About page.
 
@@ -34,15 +34,29 @@ This project is built with Flutter and Dart. The current codebase uses a small l
 
 - `lib/models`: `CampusUser`, `Listing`, `ListingDraft`, and `ListingLocation`.
 - `lib/repositories`: abstract repositories plus Firebase and memory implementations.
-- `lib/services`: device integrations for location and image picking.
+- `lib/services`: device integrations for location and image picking, plus listing photo upload storage.
 - `lib/controllers`: `AppController`, the app state class used by the screens.
 - `lib/screens`: authentication, marketplace, listing detail, and listing form screens.
 - `lib/widgets`: reusable listing image rendering.
 - `test`: repository and widget tests.
 
-The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, plus `FirestoreListingRepository` for listing CRUD in the `listings` collection.
+The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, `FirestoreListingRepository` for listing CRUD in the `listings` collection, and `FirebaseListingPhotoStorage` for listing image uploads.
 
-The app is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication is enabled for the test user below, and Cloud Firestore stores marketplace records in the `listings` collection.
+The app is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication is enabled for the test user below, Cloud Firestore stores marketplace records in the `listings` collection, and Firebase Storage stores listing photos under `listing_photos/{userId}`.
+
+For a fresh Firebase setup, enable Firebase Storage before testing photo upload. The intended marking rules allow anyone to read listing photos while only the signed-in owner can upload into their own folder:
+
+```js
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /listing_photos/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
 
 ## Test User
 
@@ -80,4 +94,4 @@ The implementation covers authentication, Firestore-ready remote data, listing C
 
 ## Marker Notes
 
-The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage for uploaded image hosting.
+The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Selected images are previewed locally during editing, then uploaded to Firebase Storage when the listing is saved; Firestore stores the resulting download URL.
