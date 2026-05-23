@@ -64,7 +64,7 @@ Future<AppDependencies> buildDependencies() async {
       authRepository: FirebaseAuthRepository(),
       listingRepository: FirestoreListingRepository(),
       deviceService: deviceService,
-      photoStorage: FirebaseListingPhotoStorage(),
+      photoStorage: CloudinaryListingPhotoStorage(),
       usingDemoBackend: false,
     );
   } catch (error) {

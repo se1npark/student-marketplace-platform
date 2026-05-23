@@ -50,7 +50,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       body: Column(
         children: [
           if (controller.usingDemoBackend)
-            const _StatusStrip(icon: Icons.cloud_off, text: 'Demo backend'),
+            _StatusStrip(
+              icon: Icons.cloud_off,
+              text: controller.startupNotice ?? 'Demo backend',
+            ),
           if (controller.errorMessage != null)
             _InlineError(message: controller.errorMessage!),
           const _CampusHero(),

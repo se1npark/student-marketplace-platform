@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'listing_file_image.dart';
@@ -40,7 +41,24 @@ class ListingImage extends StatelessWidget {
       return Image.network(
         path,
         fit: fit,
-        errorBuilder: (context, error, stackTrace) => fallback,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded /
+                      progress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          if (kDebugMode) {
+            debugPrint('ListingImage failed to load "$path": $error');
+          }
+          return fallback;
+        },
       );
     }
 
