@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/app_controller.dart';
@@ -146,7 +146,7 @@ class ListingDetailScreen extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       key: const Key('contactSellerButton'),
-                      onPressed: () => _copySellerEmail(context, sellerEmail),
+                      onPressed: () => _contactSeller(context, sellerEmail),
                       icon: const Icon(Icons.mail_outline),
                       label: const Text('Contact seller'),
                     ),
@@ -174,12 +174,16 @@ class ListingDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _copySellerEmail(BuildContext context, String email) async {
-    await Clipboard.setData(ClipboardData(text: email));
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Seller email copied: $email')));
+  Future<void> _contactSeller(BuildContext context, String email) async {
+    final uri = Uri(scheme: 'mailto', path: email);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No email app found — seller: $email')),
+      );
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context, Listing listing) async {
