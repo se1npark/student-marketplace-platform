@@ -15,12 +15,32 @@ void main() {
     );
     await pumpEventQueue();
 
-    expect(controller.listings, hasLength(3));
+    expect(controller.listings, hasLength(5));
 
     controller.setCategoryFilter('Services');
 
     expect(controller.listings, hasLength(1));
     expect(controller.listings.single.category, 'Services');
+    controller.dispose();
+  });
+
+  test('seed listings include every marketplace category', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      usingDemoBackend: true,
+    );
+    await pumpEventQueue();
+
+    final seededCategories = controller.listings
+        .map((listing) => listing.category)
+        .toSet();
+
+    expect(
+      seededCategories,
+      containsAll(['Textbooks', 'Food', 'Electronics', 'Services', 'Other']),
+    );
     controller.dispose();
   });
 

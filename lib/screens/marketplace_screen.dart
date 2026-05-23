@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../campus_content.dart';
 import '../controllers/app_controller.dart';
 import '../models/listing.dart';
 import 'listing_form_screen.dart';
@@ -43,6 +44,7 @@ class MarketplaceScreen extends StatelessWidget {
             const _StatusStrip(icon: Icons.cloud_off, text: 'Demo backend'),
           if (controller.errorMessage != null)
             _InlineError(message: controller.errorMessage!),
+          const _CampusHero(),
           _CategoryFilters(controller: controller),
           Expanded(
             child: controller.listings.isEmpty
@@ -108,6 +110,66 @@ class MarketplaceScreen extends StatelessWidget {
   }
 }
 
+class _CampusHero extends StatelessWidget {
+  const _CampusHero();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      width: double.infinity,
+      height: 146,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            CampusContent.campusHeroImageAsset,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                Container(color: theme.colorScheme.primaryContainer),
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.08),
+                  Colors.black.withValues(alpha: 0.62),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  CampusContent.campusName,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  CampusContent.campusTagline,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _CategoryFilters extends StatelessWidget {
   const _CategoryFilters({required this.controller});
 
@@ -168,8 +230,9 @@ class ListingCard extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                listing.imagePath == null ? Icons.sell : Icons.photo,
+              clipBehavior: Clip.antiAlias,
+              child: _ListingThumbnail(
+                imagePath: listing.imagePath,
                 color: theme.colorScheme.onPrimaryContainer,
               ),
             ),
@@ -265,6 +328,38 @@ class ListingCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ListingThumbnail extends StatelessWidget {
+  const _ListingThumbnail({required this.imagePath, required this.color});
+
+  final String? imagePath;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = imagePath;
+    final uri = path == null ? null : Uri.tryParse(path);
+    if (path != null && path.startsWith('assets/')) {
+      return Image.asset(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Icon(Icons.photo, color: color),
+      );
+    }
+
+    if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {
+      return Image.network(
+        path!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Icon(Icons.photo, color: color),
+      );
+    }
+
+    return Icon(path == null ? Icons.sell : Icons.photo, color: color);
   }
 }
 

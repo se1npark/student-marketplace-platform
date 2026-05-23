@@ -26,8 +26,6 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Campus Cart can attach a listing photo from your camera.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Campus Cart can add your current campus location to a listing.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -84,30 +84,30 @@ void main() {
     await tester.tap(find.byKey(const Key('useDemoLoginButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Reusable coffee cup'), findsOneWidget);
+    expect(find.text('Reusable cup for The Hub'), findsOneWidget);
 
-    await _openListingActions(tester, 'Reusable coffee cup');
+    await _openListingActions(tester, 'Reusable cup for The Hub');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
 
     await tester.enterText(
       find.byKey(const Key('listingTitleField')),
-      'Reusable coffee cup and lid',
+      'Reusable cup and lid for The Hub',
     );
     await tester.tap(find.byKey(const Key('saveListingButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Reusable coffee cup and lid'), findsOneWidget);
-    expect(find.text('Reusable coffee cup'), findsNothing);
+    expect(find.text('Reusable cup and lid for The Hub'), findsOneWidget);
+    expect(find.text('Reusable cup for The Hub'), findsNothing);
 
-    await _openListingActions(tester, 'Reusable coffee cup and lid');
+    await _openListingActions(tester, 'Reusable cup and lid for The Hub');
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Reusable coffee cup and lid'), findsNothing);
+    expect(find.text('Reusable cup and lid for The Hub'), findsNothing);
   });
 }
 

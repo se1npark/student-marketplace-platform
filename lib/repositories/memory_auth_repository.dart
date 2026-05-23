@@ -17,9 +17,9 @@ class MemoryAuthRepository implements AuthRepository {
       accounts: const [
         MemoryAccount(
           user: CampusUser(
-            id: 'demo-user-alex',
-            email: 'alex@student.mq.edu.au',
-            displayName: 'Alex Chen',
+            id: 'demo-user-sein',
+            email: 'sein.park@student.mq.edu.au',
+            displayName: 'Sein Park',
           ),
           password: 'CampusCart1!',
         ),

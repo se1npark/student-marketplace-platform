@@ -1,8 +1,8 @@
 # Campus Cart
 
-**Tagline:** Buy, sell, and swap useful things around Macquarie campus.
+**Tagline:** Buy, sell, and swap useful things around Macquarie's Wallumattagal Campus.
 
-Campus Cart is a Flutter marketplace app for students who want a safer, smaller alternative to large public resale sites. The app focuses on everyday campus exchanges: textbooks, study equipment, electronics, food-related items such as reusable cups, and student-to-student services such as app testing swaps. A student can sign in, browse current listings, filter by category, create their own listing, attach a campus location, optionally attach a photo path, edit the listing later, and delete it when it is sold.
+Campus Cart is a Flutter marketplace app for students who want a safer, smaller alternative to large public resale sites. The app focuses on everyday Macquarie exchanges: COMP3130 notes near 1 Central Courtyard, food and coffee items around The Hub, chargers and study equipment near the Library, and student-to-student services such as app testing swaps. A student can sign in, browse current listings, filter by category, create their own listing, attach a campus location, optionally attach a photo path, edit the listing later, and delete it when it is sold.
 
 The app has been designed as a simple major project demonstration rather than a full commercial product. Its main data entity is a `Listing`, stored through a repository layer that supports create, read, update, and delete operations. Firebase Authentication and Cloud Firestore implementations are included, with an in-memory demo backend used automatically while Firebase options still contain placeholders. This keeps the app runnable for development and testing while making the intended remote backend clear in the code.
 
@@ -16,12 +16,15 @@ The app has been designed as a simple major project demonstration rather than a 
 - Mobile device service integration through current device location using `geolocator`.
 - Optional photo selection using `image_picker`.
 - Unit and widget tests that run with `flutter test`.
+- MQ-specific seed listings, campus pickup labels, and a marketplace header image sourced from the Macquarie University About page.
 
 ## Users
 
 The primary users are Macquarie students who need quick, local exchanges with people already on campus. A first persona is Alex, a second-year computing student who buys used textbooks and sells old electronics after each session. Alex prefers Campus Cart over Facebook Marketplace because listings are scoped to campus and include student contact details. A second persona is Priya, a first-year student who wants affordable study items and uses the category filters to avoid scrolling through unrelated products. A third persona is Jordan, a student building a mobile app who offers peer testing sessions before assessment demos.
 
 These users choose Campus Cart because it is lightweight and task-focused. They do not need auctions, shipping, public profiles, or complex payments. The app supports the practical campus handover: find an item, check the price and condition, see where the seller can meet, and contact them through their student email.
+
+The campus context is based on Macquarie's official pages: the main campus is known as the Wallumattagal Campus, and MQ highlights campus green spaces, lifestyle facilities and food outlets. The app also references 1 Central Courtyard and The Hub because official MQ pages describe Central Courtyard as a major social, food and learning precinct.
 
 ## Technical Details
 
@@ -45,7 +48,7 @@ The app checks `lib/firebase_options.dart` at startup. If the values still conta
 
 Demo mode login:
 
-- Email: `alex@student.mq.edu.au`
+- Email: `sein.park@student.mq.edu.au`
 - Password: `CampusCart1!`
 
 For the final Firebase-backed version, create the same test user in Firebase Authentication or update this section with the real marker login.
@@ -79,6 +82,10 @@ flutter run --dart-define=DEMO_BACKEND=true
 - Device services: listings can attach current device location and a selected photo path.
 - Structure: models, repositories, services, controller, and screens are separated.
 - Tests: widget tests cover auth validation plus listing create/edit/delete flows; unit tests cover repositories, controller logic, and model mapping.
+
+## App Store Submission
+
+The COMP3130 App Store copy, reviewer instructions, data collection notes and screenshot checklist are in `docs/app_store_submission.md`.
 
 ## Marker Notes
 

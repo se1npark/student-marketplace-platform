@@ -12,7 +12,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'Alex Chen');
+  final _nameController = TextEditingController(text: 'Sein Park');
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _registering = false;
@@ -55,7 +55,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Buy, sell, and swap around Macquarie.',
+                    'Buy, sell, and swap around Wallumattagal Campus.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
@@ -195,7 +195,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _useDemoLogin() async {
-    _emailController.text = 'alex@student.mq.edu.au';
+    _emailController.text = 'sein.park@student.mq.edu.au';
     _passwordController.text = 'CampusCart1!';
     await _submit();
   }

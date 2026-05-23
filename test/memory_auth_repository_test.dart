@@ -12,13 +12,13 @@ void main() {
     await pumpEventQueue();
 
     await repository.signIn(
-      email: 'alex@student.mq.edu.au',
+      email: 'sein.park@student.mq.edu.au',
       password: 'CampusCart1!',
     );
     await pumpEventQueue();
 
-    expect(repository.currentUser?.displayName, 'Alex Chen');
-    expect(authEvents.last, 'alex@student.mq.edu.au');
+    expect(repository.currentUser?.displayName, 'Sein Park');
+    expect(authEvents.last, 'sein.park@student.mq.edu.au');
 
     await repository.signOut();
     await pumpEventQueue();
@@ -33,8 +33,8 @@ void main() {
 
     expect(
       () => repository.register(
-        name: 'Alex Again',
-        email: 'alex@student.mq.edu.au',
+        name: 'Sein Again',
+        email: 'sein.park@student.mq.edu.au',
         password: 'CampusCart1!',
       ),
       throwsA(isA<AuthException>()),
