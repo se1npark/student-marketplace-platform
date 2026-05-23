@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/campus_user.dart';
@@ -99,11 +98,7 @@ class FirebaseAuthRepository implements AuthRepository {
     _controller.add(_userFromRestData(data));
   }
 
-  Future<void> _restRegister(
-    String name,
-    String email,
-    String password,
-  ) async {
+  Future<void> _restRegister(String name, String email, String password) async {
     final data = await _restPost('accounts:signUp', {
       'email': email,
       'password': password,
@@ -117,22 +112,22 @@ class FirebaseAuthRepository implements AuthRepository {
       'returnSecureToken': false,
     });
 
-    _controller.add(CampusUser(
-      id: data['localId'] as String,
-      email: email,
-      displayName: name.isNotEmpty ? name : _displayNameFromEmail(email),
-    ));
+    _controller.add(
+      CampusUser(
+        id: data['localId'] as String,
+        email: email,
+        displayName: name.isNotEmpty ? name : _displayNameFromEmail(email),
+      ),
+    );
   }
 
   Future<Map<String, dynamic>> _restPost(
     String endpoint,
     Map<String, dynamic> body,
   ) async {
-    final uri = Uri.https(
-      'identitytoolkit.googleapis.com',
-      '/v1/$endpoint',
-      {'key': _apiKey},
-    );
+    final uri = Uri.https('identitytoolkit.googleapis.com', '/v1/$endpoint', {
+      'key': _apiKey,
+    });
 
     final response = await http.post(
       uri,
@@ -156,10 +151,9 @@ class FirebaseAuthRepository implements AuthRepository {
     return CampusUser(
       id: data['localId'] as String,
       email: email,
-      displayName:
-          (data['displayName'] as String?)?.isNotEmpty == true
-              ? data['displayName'] as String
-              : _displayNameFromEmail(email),
+      displayName: (data['displayName'] as String?)?.isNotEmpty == true
+          ? data['displayName'] as String
+          : _displayNameFromEmail(email),
     );
   }
 
