@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'listing_file_image.dart';
+
 class ListingImage extends StatelessWidget {
   const ListingImage({
     super.key,
@@ -42,6 +44,6 @@ class ListingImage extends StatelessWidget {
       );
     }
 
-    return fallback;
+    return buildListingFileImage(path, fit, fallback);
   }
 }
