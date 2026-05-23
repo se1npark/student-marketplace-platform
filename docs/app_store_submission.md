@@ -1,4 +1,4 @@
-# COMP3130 App Store Submission Copy
+# COMP3130 App Store Submission
 
 Use this page when filling out the COMP3130 App Store form. It follows the structure shown in the example submissions.
 
@@ -20,11 +20,7 @@ Users can register or sign in, request password reset feedback, browse listings,
 
 ## Screenshot Images
 
-Recommended screenshots to upload:
-
-- Login screen: `docs/screenshots/ios/01_login.png`
-- Marketplace feed: `docs/screenshots/ios/02_marketplace.png`
-- New listing form: `docs/screenshots/ios/03_new_listing.png`
+Screenshots and the public app description are submitted separately through the COMP3130 App Store site: `http://3.104.146.108/`.
 
 ## Reviewer Information
 
@@ -51,7 +47,7 @@ Known limitations:
 
 - The current repository contains placeholder Firebase options. Until real Firebase values are added, the app starts in demo backend mode.
 - Picked photos are stored as a local selected file path for assessment demonstration. A production version would upload images to Firebase Storage and store public download URLs in Firestore.
-- Device compatibility target: Android APK, Chrome web and iPhone-sized review screenshots. iOS deployment target is 15.0 for current Firebase iOS pods.
+- Device compatibility target: Android APK, Chrome web and iPhone simulator review. iOS deployment target is 15.0 for current Firebase iOS pods.
 
 ## App Capabilities and Data Collection
 

@@ -80,8 +80,8 @@ The implementation covers authentication, Firestore-ready remote data, listing C
 
 ## App Store Submission
 
-The COMP3130 App Store copy, reviewer instructions, data collection notes and screenshot checklist are in `docs/app_store_submission.md`. iPhone-sized screenshots are in `docs/screenshots/ios`.
+The COMP3130 App Store copy, reviewer instructions and data collection notes are in `docs/app_store_submission.md`. iPhone-sized screenshots and the public submission page are uploaded separately through the COMP3130 App Store site.
 
 ## Marker Notes
 
-The app is prepared for Android, Chrome and iPhone-sized review screenshots. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. Real Firebase configuration is still required for a live backend assessment.
+The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. Real Firebase configuration is still required for a live backend assessment.
