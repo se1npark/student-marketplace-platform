@@ -48,7 +48,7 @@ The app is configured for the `campus-cart-seinpark` Firebase project. For marki
 
 Firebase test login:
 
-- Email: `sein.park@student.mq.edu.au`
+- Email: `sein.park@students.mq.edu.au`
 - Password: `CampusCart1!`
 
 Demo mode is still available for local fallback with `--dart-define=DEMO_BACKEND=true`.

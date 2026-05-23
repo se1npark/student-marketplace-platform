@@ -122,6 +122,7 @@ class Listing {
   }
 
   factory Listing.fromMap(String id, Map<String, dynamic> map) {
+    final contactEmail = (map['contactEmail'] as String?) ?? '';
     return Listing(
       id: id,
       title: (map['title'] as String?) ?? 'Untitled listing',
@@ -130,8 +131,8 @@ class Listing {
       condition: (map['condition'] as String?) ?? 'Good',
       price: _readDouble(map['price']),
       ownerId: (map['ownerId'] as String?) ?? '',
-      ownerName: (map['ownerName'] as String?) ?? 'Campus seller',
-      contactEmail: (map['contactEmail'] as String?) ?? '',
+      ownerName: _readOwnerName(map['ownerName'] as String?, contactEmail),
+      contactEmail: contactEmail,
       createdAt: _readDate(map['createdAt']),
       updatedAt: _readDate(map['updatedAt']),
       location: _readLocation(map['location']),
@@ -155,6 +156,26 @@ class Listing {
       if (imagePath != null && imagePath!.isNotEmpty) 'imagePath': imagePath,
     };
   }
+}
+
+String _readOwnerName(String? ownerName, String contactEmail) {
+  final trimmedName = ownerName?.trim();
+  if (trimmedName != null &&
+      trimmedName.isNotEmpty &&
+      trimmedName != 'Campus seller') {
+    return trimmedName;
+  }
+
+  final localPart = contactEmail.split('@').first.trim();
+  if (localPart.isEmpty) {
+    return 'Campus seller';
+  }
+
+  return localPart
+      .split(RegExp(r'[._-]+'))
+      .where((part) => part.isNotEmpty)
+      .map((part) => part[0].toUpperCase() + part.substring(1))
+      .join(' ');
 }
 
 ListingLocation? _readLocation(Object? value) {

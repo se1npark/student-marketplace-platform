@@ -12,13 +12,13 @@ void main() {
     await pumpEventQueue();
 
     await repository.signIn(
-      email: 'sein.park@student.mq.edu.au',
+      email: 'sein.park@students.mq.edu.au',
       password: 'CampusCart1!',
     );
     await pumpEventQueue();
 
     expect(repository.currentUser?.displayName, 'Sein Park');
-    expect(authEvents.last, 'sein.park@student.mq.edu.au');
+    expect(authEvents.last, 'sein.park@students.mq.edu.au');
 
     await repository.signOut();
     await pumpEventQueue();
@@ -34,7 +34,7 @@ void main() {
     expect(
       () => repository.register(
         name: 'Sein Again',
-        email: 'sein.park@student.mq.edu.au',
+        email: 'sein.park@students.mq.edu.au',
         password: 'CampusCart1!',
       ),
       throwsA(isA<AuthException>()),
@@ -54,7 +54,7 @@ void main() {
     final repository = MemoryAuthRepository.withDemoUser();
 
     await expectLater(
-      repository.resetPassword('sein.park@student.mq.edu.au'),
+      repository.resetPassword('sein.park@students.mq.edu.au'),
       completes,
     );
 

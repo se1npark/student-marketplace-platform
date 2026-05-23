@@ -18,7 +18,7 @@ class MemoryAuthRepository implements AuthRepository {
         MemoryAccount(
           user: CampusUser(
             id: 'demo-user-sein',
-            email: 'sein.park@student.mq.edu.au',
+            email: 'sein.park@students.mq.edu.au',
             displayName: 'Sein Park',
           ),
           password: 'CampusCart1!',

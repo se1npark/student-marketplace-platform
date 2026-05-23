@@ -70,8 +70,21 @@ class FirebaseAuthRepository implements AuthRepository {
       email: user.email ?? '',
       displayName: user.displayName?.trim().isNotEmpty == true
           ? user.displayName!.trim()
-          : 'Campus seller',
+          : _displayNameFromEmail(user.email),
     );
+  }
+
+  String _displayNameFromEmail(String? email) {
+    final localPart = email?.split('@').first.trim();
+    if (localPart == null || localPart.isEmpty) {
+      return 'Campus seller';
+    }
+
+    return localPart
+        .split(RegExp(r'[._-]+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => part[0].toUpperCase() + part.substring(1))
+        .join(' ');
   }
 
   String _messageFor(FirebaseAuthException error) {

@@ -206,7 +206,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _useDemoLogin() async {
-    _emailController.text = 'sein.park@student.mq.edu.au';
+    _emailController.text = 'sein.park@students.mq.edu.au';
     _passwordController.text = 'CampusCart1!';
     await _submit();
   }

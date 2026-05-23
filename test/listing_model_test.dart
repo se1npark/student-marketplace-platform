@@ -30,4 +30,15 @@ void main() {
     expect(map['title'], 'USB-C charger');
     expect(map['location'], isA<Map<String, dynamic>>());
   });
+
+  test('listing derives a readable owner name from student email fallback', () {
+    final listing = Listing.fromMap('listing-2', {
+      'title': 'USB Charger',
+      'contactEmail': 'sein.park@students.mq.edu.au',
+      'ownerName': 'Campus seller',
+    });
+
+    expect(listing.ownerName, 'Sein Park');
+    expect(listing.contactEmail, 'sein.park@students.mq.edu.au');
+  });
 }

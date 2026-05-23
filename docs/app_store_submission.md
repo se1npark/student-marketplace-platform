@@ -26,7 +26,7 @@ Screenshots and the public app description are submitted separately through the 
 
 Test account:
 
-- Email: `sein.park@student.mq.edu.au`
+- Email: `sein.park@students.mq.edu.au`
 - Password: `CampusCart1!`
 
 You can also register a new account from the Register tab.

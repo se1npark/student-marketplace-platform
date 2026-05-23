@@ -26,7 +26,7 @@ class MemoryListingRepository implements ListingRepository {
           price: 18,
           ownerId: 'demo-user-sein',
           ownerName: 'Sein Park',
-          contactEmail: 'sein.park@student.mq.edu.au',
+          contactEmail: 'sein.park@students.mq.edu.au',
           createdAt: now.subtract(const Duration(days: 2)),
           updatedAt: now.subtract(const Duration(days: 2)),
           location: const ListingLocation(
@@ -46,7 +46,7 @@ class MemoryListingRepository implements ListingRepository {
           price: 9,
           ownerId: 'demo-user-sein',
           ownerName: 'Sein Park',
-          contactEmail: 'sein.park@student.mq.edu.au',
+          contactEmail: 'sein.park@students.mq.edu.au',
           createdAt: now.subtract(const Duration(hours: 9)),
           updatedAt: now.subtract(const Duration(hours: 9)),
           location: const ListingLocation(
@@ -66,7 +66,7 @@ class MemoryListingRepository implements ListingRepository {
           price: 22,
           ownerId: 'demo-user-sein',
           ownerName: 'Sein Park',
-          contactEmail: 'sein.park@student.mq.edu.au',
+          contactEmail: 'sein.park@students.mq.edu.au',
           createdAt: now.subtract(const Duration(hours: 15)),
           updatedAt: now.subtract(const Duration(hours: 15)),
           location: const ListingLocation(
@@ -86,7 +86,7 @@ class MemoryListingRepository implements ListingRepository {
           price: 0,
           ownerId: 'demo-user-sein',
           ownerName: 'Sein Park',
-          contactEmail: 'sein.park@student.mq.edu.au',
+          contactEmail: 'sein.park@students.mq.edu.au',
           createdAt: now.subtract(const Duration(hours: 3)),
           updatedAt: now.subtract(const Duration(hours: 3)),
           location: const ListingLocation(
@@ -106,7 +106,7 @@ class MemoryListingRepository implements ListingRepository {
           price: 6,
           ownerId: 'demo-user-sein',
           ownerName: 'Sein Park',
-          contactEmail: 'sein.park@student.mq.edu.au',
+          contactEmail: 'sein.park@students.mq.edu.au',
           createdAt: now.subtract(const Duration(hours: 30)),
           updatedAt: now.subtract(const Duration(hours: 30)),
           location: const ListingLocation(

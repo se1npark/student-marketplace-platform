@@ -79,7 +79,7 @@ void main() {
       await pumpEventQueue();
 
       await controller.signIn(
-        email: 'sein.park@student.mq.edu.au',
+        email: 'sein.park@students.mq.edu.au',
         password: 'CampusCart1!',
       );
       await pumpEventQueue();
