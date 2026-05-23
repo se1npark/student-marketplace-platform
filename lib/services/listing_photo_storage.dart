@@ -38,6 +38,9 @@ class FirebaseListingPhotoStorage implements ListingPhotoStorage {
   }
 }
 
+// Unsigned upload preset lets the client post directly to Cloudinary without
+// exposing an API secret. The returned secure_url is an HTTPS CDN link that
+// works on every platform without CORS or Firebase Storage bucket setup.
 class CloudinaryListingPhotoStorage implements ListingPhotoStorage {
   static const _cloudName = 'dmeakmx3m';
   static const _uploadPreset = 'pbwwndp3';

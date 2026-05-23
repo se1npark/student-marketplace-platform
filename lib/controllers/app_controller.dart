@@ -182,6 +182,8 @@ class AppController extends ChangeNotifier {
     return result ?? false;
   }
 
+  // Central busy/error wrapper so every action toggles isBusy and surfaces
+  // failures through errorMessage rather than crashing the UI.
   Future<T?> _runValue<T>(Future<T> Function() action) async {
     _busy = true;
     _errorMessage = null;

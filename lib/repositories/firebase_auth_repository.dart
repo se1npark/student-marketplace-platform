@@ -87,6 +87,9 @@ class FirebaseAuthRepository implements AuthRepository {
 
   // ── REST API fallback (macOS keychain workaround) ──────────────────────
 
+  // REST sign-in is used when the SDK throws a keychain error (macOS without
+  // code signing). The response gives us the UID and display name so we can
+  // push a CampusUser directly onto the stream without SDK persistence.
   Future<void> _restSignIn(String email, String password) async {
     final data = await _restPost('accounts:signInWithPassword', {
       'email': email,
