@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359052378105",
+    "project_id": "campus-cart-seinpark",
+    "storage_bucket": "campus-cart-seinpark.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359052378105:android:75b3d3a2c2128c8bb84728",
+        "android_client_info": {
+          "package_name": "au.edu.mq.campus_cart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACg5SicoMr3DpsaR3XjHOwfG5g9GcUZ44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

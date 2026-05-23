@@ -42,16 +42,16 @@ This project is built with Flutter and Dart. The current codebase uses a small l
 
 The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, plus `FirestoreListingRepository` for listing CRUD in the `listings` collection.
 
-The app checks `lib/firebase_options.dart` at startup. If the values still contain placeholders, it starts in demo mode. To use Firebase for marking, replace the placeholder options with real Android, iOS, and web values, enable Email/Password authentication, and create suitable Firestore rules for the `listings` collection.
+The app is configured for the `campus-cart-seinpark` Firebase project. For marking, enable Email/Password authentication, create the test user below, and create a Cloud Firestore database for the `listings` collection.
 
 ## Test User
 
-Demo mode login:
+Firebase test login:
 
 - Email: `sein.park@student.mq.edu.au`
 - Password: `CampusCart1!`
 
-For the final Firebase-backed version, create the same test user in Firebase Authentication or update this section with the real marker login.
+Demo mode is still available for local fallback with `--dart-define=DEMO_BACKEND=true`.
 
 ## Running and Testing
 
@@ -84,4 +84,4 @@ The COMP3130 App Store copy, reviewer instructions and data collection notes are
 
 ## Marker Notes
 
-The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. Real Firebase configuration is still required for a live backend assessment.
+The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. The Firebase app configuration is present; the Firebase Console still needs Email/Password authentication, the marker account, and Cloud Firestore enabled before live marking.

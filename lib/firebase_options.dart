@@ -25,37 +25,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_WEB_API_KEY',
-    appId: 'REPLACE_WITH_WEB_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'campus-cart-placeholder',
-    authDomain: 'campus-cart-placeholder.firebaseapp.com',
-    storageBucket: 'campus-cart-placeholder.appspot.com',
+    apiKey: 'AIzaSyCgPWZAS2snAFV7Bz8gfjFDqJDonj2iMOc',
+    appId: '1:359052378105:web:70aeb9f3c957a6abb84728',
+    messagingSenderId: '359052378105',
+    projectId: 'campus-cart-seinpark',
+    authDomain: 'campus-cart-seinpark.firebaseapp.com',
+    storageBucket: 'campus-cart-seinpark.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ANDROID_API_KEY',
-    appId: 'REPLACE_WITH_ANDROID_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'campus-cart-placeholder',
-    storageBucket: 'campus-cart-placeholder.appspot.com',
+    apiKey: 'AIzaSyACg5SicoMr3DpsaR3XjHOwfG5g9GcUZ44',
+    appId: '1:359052378105:android:75b3d3a2c2128c8bb84728',
+    messagingSenderId: '359052378105',
+    projectId: 'campus-cart-seinpark',
+    storageBucket: 'campus-cart-seinpark.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_IOS_API_KEY',
-    appId: 'REPLACE_WITH_IOS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'campus-cart-placeholder',
-    storageBucket: 'campus-cart-placeholder.appspot.com',
+    apiKey: 'AIzaSyCBP4Rsm8lHzFLeiTB6v0M6P2iUSrUu_3k',
+    appId: '1:359052378105:ios:c14b84a2dcc15202b84728',
+    messagingSenderId: '359052378105',
+    projectId: 'campus-cart-seinpark',
+    storageBucket: 'campus-cart-seinpark.firebasestorage.app',
     iosBundleId: 'au.edu.mq.campusCart',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_MACOS_API_KEY',
-    appId: 'REPLACE_WITH_MACOS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'campus-cart-placeholder',
-    storageBucket: 'campus-cart-placeholder.appspot.com',
+    apiKey: 'AIzaSyCBP4Rsm8lHzFLeiTB6v0M6P2iUSrUu_3k',
+    appId: '1:359052378105:ios:c14b84a2dcc15202b84728',
+    messagingSenderId: '359052378105',
+    projectId: 'campus-cart-seinpark',
+    storageBucket: 'campus-cart-seinpark.firebasestorage.app',
     iosBundleId: 'au.edu.mq.campusCart',
   );
 }

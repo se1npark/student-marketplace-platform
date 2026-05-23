@@ -45,7 +45,7 @@ Testing device services:
 
 Known limitations:
 
-- The current repository contains placeholder Firebase options. Until real Firebase values are added, the app starts in demo backend mode.
+- The repository is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication, the marker account and Cloud Firestore must be enabled in the Firebase Console before live marking.
 - Picked photos are stored as a local selected file path for assessment demonstration. A production version would upload images to Firebase Storage and store public download URLs in Firestore.
 - Device compatibility target: Android APK, Chrome web and iPhone simulator review. iOS deployment target is 15.0 for current Firebase iOS pods.
 
