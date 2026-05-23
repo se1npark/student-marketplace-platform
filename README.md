@@ -4,7 +4,7 @@
 
 Campus Cart is a Flutter marketplace app for students who want a safer, smaller alternative to large public resale sites. The app focuses on everyday Macquarie exchanges: COMP3130 notes near 1 Central Courtyard, food and coffee items around The Hub, chargers and study equipment near the Library, umbrellas for Metro walks, and student-to-student services such as app testing swaps. A student can sign in, search and filter current listings, open a detailed listing page, save useful listings, create their own listing, attach a campus pickup point, optionally attach a photo path, edit the listing later, and delete it when it is sold.
 
-The app is a focused major project demonstration rather than a full commercial product. Its main data entity is a `Listing`, stored through a repository layer that supports create, read, update, and delete operations. Firebase Authentication and Cloud Firestore implementations are included, with an in-memory demo backend used automatically while Firebase options still contain placeholders.
+The app is a focused major project demonstration rather than a full commercial product. Its main data entity is a `Listing`, stored through a repository layer that supports create, read, update, and delete operations. Firebase Authentication and Cloud Firestore are configured for live marking, with an in-memory demo backend still available for offline testing.
 
 ## Main Features
 
@@ -42,7 +42,7 @@ This project is built with Flutter and Dart. The current codebase uses a small l
 
 The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, plus `FirestoreListingRepository` for listing CRUD in the `listings` collection.
 
-The app is configured for the `campus-cart-seinpark` Firebase project. For marking, enable Email/Password authentication, create the test user below, and create a Cloud Firestore database for the `listings` collection.
+The app is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication is enabled for the test user below, and Cloud Firestore stores marketplace records in the `listings` collection.
 
 ## Test User
 
@@ -80,4 +80,4 @@ The implementation covers authentication, Firestore-ready remote data, listing C
 
 ## Marker Notes
 
-The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage. The Firebase app configuration is present; the Firebase Console still needs Email/Password authentication, the marker account, and Cloud Firestore enabled before live marking.
+The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Photo handling stores the selected local image path; a production version would add Firebase Storage for uploaded image hosting.
