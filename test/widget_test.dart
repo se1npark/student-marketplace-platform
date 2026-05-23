@@ -151,6 +151,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Listing details'), findsOneWidget);
+    expect(find.text('Contact seller'), findsOneWidget);
+    expect(find.text('sein.park@students.mq.edu.au'), findsOneWidget);
     expect(find.text('Pickup point'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Save listing'));

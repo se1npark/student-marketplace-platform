@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,7 @@ class ListingDetailScreen extends StatelessWidget {
     final saved = controller.isSaved(listing.id);
     final theme = Theme.of(context);
     final currency = NumberFormat.simpleCurrency(name: 'AUD');
+    final sellerEmail = listing.contactEmail.trim();
 
     return Scaffold(
       appBar: AppBar(
@@ -138,6 +140,18 @@ class ListingDetailScreen extends StatelessWidget {
                   title: Text(listing.ownerName),
                   subtitle: Text(listing.contactEmail),
                 ),
+                if (sellerEmail.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      key: const Key('contactSellerButton'),
+                      onPressed: () => _copySellerEmail(context, sellerEmail),
+                      icon: const Icon(Icons.mail_outline),
+                      label: const Text('Contact seller'),
+                    ),
+                  ),
+                ],
                 if (listing.location != null) ...[
                   const SizedBox(height: 12),
                   Text('Pickup point', style: theme.textTheme.titleMedium),
@@ -158,6 +172,14 @@ class ListingDetailScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _copySellerEmail(BuildContext context, String email) async {
+    await Clipboard.setData(ClipboardData(text: email));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Seller email copied: $email')));
   }
 
   Future<void> _confirmDelete(BuildContext context, Listing listing) async {
