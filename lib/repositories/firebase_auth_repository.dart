@@ -21,16 +21,20 @@ class FirebaseAuthRepository implements AuthRepository {
 
   final FirebaseAuth _firebaseAuth;
   final _controller = StreamController<CampusUser?>.broadcast();
+  CampusUser? _restUser;
 
   // macOS Firebase Auth cannot persist to keychain without code signing.
   // Fall back to the REST API so we can manually drive auth state.
   static const _apiKey = 'AIzaSyCBP4Rsm8lHzFLeiTB6v0M6P2iUSrUu_3k';
 
   @override
-  CampusUser? get currentUser => _mapUser(_firebaseAuth.currentUser);
+  CampusUser? get currentUser => _mapUser(_firebaseAuth.currentUser) ?? _restUser;
 
   @override
-  Stream<CampusUser?> authStateChanges() => _controller.stream;
+  Stream<CampusUser?> authStateChanges() async* {
+    yield currentUser;
+    yield* _controller.stream;
+  }
 
   @override
   Future<void> signIn({required String email, required String password}) async {
@@ -81,6 +85,7 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut().catchError((_) {});
+    _restUser = null;
     _controller.add(null);
   }
 
@@ -95,7 +100,8 @@ class FirebaseAuthRepository implements AuthRepository {
       'password': password,
       'returnSecureToken': true,
     });
-    _controller.add(_userFromRestData(data));
+    _restUser = _userFromRestData(data);
+    _controller.add(_restUser);
   }
 
   Future<void> _restRegister(String name, String email, String password) async {
@@ -112,13 +118,12 @@ class FirebaseAuthRepository implements AuthRepository {
       'returnSecureToken': false,
     });
 
-    _controller.add(
-      CampusUser(
-        id: data['localId'] as String,
-        email: email,
-        displayName: name.isNotEmpty ? name : _displayNameFromEmail(email),
-      ),
+    _restUser = CampusUser(
+      id: data['localId'] as String,
+      email: email,
+      displayName: name.isNotEmpty ? name : _displayNameFromEmail(email),
     );
+    _controller.add(_restUser);
   }
 
   Future<Map<String, dynamic>> _restPost(
