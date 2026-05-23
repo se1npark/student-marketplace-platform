@@ -16,7 +16,7 @@ The app is a focused major project demonstration rather than a full commercial p
 - Create, edit, and delete listing flows with validation, confirmation dialogs, loading states and success messages.
 - Listing fields for title, description, category, condition, price, seller, contact email, hosted photo URL, and optional location.
 - Mobile device service integration through current device location using `geolocator`.
-- Optional photo selection using `image_picker`, uploaded to Firebase Storage so photos render across devices.
+- Optional photo selection using `image_picker`, uploaded to Cloudinary so photos render across all platforms via a stable HTTPS URL.
 - Unit and widget tests that run with `flutter test`, including interaction tests.
 - MQ-specific seed listings, generated item images, campus pickup labels, and a marketplace header image sourced from the Macquarie University About page.
 
@@ -40,23 +40,11 @@ This project is built with Flutter and Dart. The current codebase uses a small l
 - `lib/widgets`: reusable listing image rendering.
 - `test`: repository and widget tests.
 
-The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, `FirestoreListingRepository` for listing CRUD in the `listings` collection, and `FirebaseListingPhotoStorage` for listing image uploads.
+The production backend path is `FirebaseAuthRepository` for sign in, registration, password reset and sign out, `FirestoreListingRepository` for listing CRUD in the `listings` collection, and `CloudinaryListingPhotoStorage` for listing image uploads.
 
-The app is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication is enabled for the test user below, Cloud Firestore stores marketplace records in the `listings` collection, and Firebase Storage stores listing photos under `listing_photos/{userId}`.
+The app is configured for the `campus-cart-seinpark` Firebase project. Email/Password authentication is enabled for the test user below, and Cloud Firestore stores marketplace records in the `listings` collection.
 
-For a fresh Firebase setup, enable Firebase Storage before testing photo upload. The intended marking rules allow anyone to read listing photos while only the signed-in owner can upload into their own folder:
-
-```js
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /listing_photos/{userId}/{fileName} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
+Listing photos are uploaded to [Cloudinary](https://cloudinary.com) using an unsigned upload preset and stored as `https://` URLs in Firestore. No Firebase Storage setup is required — photos load on all platforms (Android, iOS, Chrome, macOS) without any CORS or bucket configuration.
 
 ## Test User
 
@@ -94,4 +82,4 @@ The implementation covers authentication, Firestore-ready remote data, listing C
 
 ## Marker Notes
 
-The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Selected images are previewed locally during editing, then uploaded to Firebase Storage when the listing is saved; Firestore stores the resulting download URL.
+The app is prepared for Android, Chrome and iPhone simulator review. Android permissions are declared in `android/app/src/main/AndroidManifest.xml`; iOS usage descriptions are in `ios/Runner/Info.plist`, with iOS target 15.0 for current Firebase pods. Selected images are previewed locally during editing, then uploaded to Cloudinary when the listing is saved; Firestore stores the resulting HTTPS URL so photos display identically on every platform.
