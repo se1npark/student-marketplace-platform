@@ -79,6 +79,14 @@ class MemoryAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> resetPassword(String email) async {
+    final normalizedEmail = email.toLowerCase().trim();
+    if (!_accounts.containsKey(normalizedEmail)) {
+      throw const AuthException('Enter a registered email address.');
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     _currentUser = null;
     _controller.add(null);

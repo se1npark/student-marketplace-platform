@@ -67,6 +67,11 @@ flutter:
 
   assets:
     - assets/images/mq_about_banner.png
+    - assets/images/item_charger.png
+    - assets/images/item_cup.png
+    - assets/images/item_notes.png
+    - assets/images/item_testing.png
+    - assets/images/item_umbrella.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

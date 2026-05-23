@@ -27,6 +27,7 @@ class AppController extends ChangeNotifier {
       listings,
     ) {
       _listings = listings;
+      _listingsLoaded = true;
       notifyListeners();
     }, onError: _setError);
   }
@@ -42,31 +43,60 @@ class AppController extends ChangeNotifier {
 
   CampusUser? _user;
   List<Listing> _listings = const [];
+  final Set<String> _savedListingIds = <String>{};
   bool _busy = false;
+  bool _listingsLoaded = false;
   String? _errorMessage;
   String _categoryFilter = 'All';
+  String _searchQuery = '';
 
   CampusUser? get user => _user;
   bool get isBusy => _busy;
+  bool get isLoadingListings => !_listingsLoaded;
   String? get errorMessage => _errorMessage;
   String get categoryFilter => _categoryFilter;
+  String get searchQuery => _searchQuery;
+  int get totalListingCount => _listings.length;
+  int get savedListingCount => _savedListingIds.length;
+  int get ownListingCount =>
+      _listings.where((listing) => listing.ownerId == _user?.id).length;
 
   List<String> get filterOptions => const ['All', ...listingCategories];
 
-  List<Listing> get listings {
-    if (_categoryFilter == 'All') {
-      return _listings;
-    }
+  List<Listing> get listings => _filtered(_listings);
 
-    return _listings
-        .where((listing) => listing.category == _categoryFilter)
-        .toList(growable: false);
-  }
+  List<Listing> get savedListings => _filtered(
+    _listings
+        .where((listing) => _savedListingIds.contains(listing.id))
+        .toList(growable: false),
+  );
+
+  List<Listing> get myListings => _filtered(
+    _listings
+        .where((listing) => listing.ownerId == _user?.id)
+        .toList(growable: false),
+  );
 
   void setCategoryFilter(String category) {
     _categoryFilter = category;
     notifyListeners();
   }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.trim().toLowerCase();
+    notifyListeners();
+  }
+
+  void toggleSaved(String listingId) {
+    if (_savedListingIds.contains(listingId)) {
+      _savedListingIds.remove(listingId);
+    } else {
+      _savedListingIds.add(listingId);
+    }
+    notifyListeners();
+  }
+
+  bool isSaved(String listingId) => _savedListingIds.contains(listingId);
 
   void clearError() {
     _errorMessage = null;
@@ -93,6 +123,10 @@ class AppController extends ChangeNotifier {
 
   Future<bool> signOut() {
     return _run(_authRepository.signOut);
+  }
+
+  Future<bool> resetPassword(String email) {
+    return _run(() => _authRepository.resetPassword(email));
   }
 
   Future<bool> createListing(ListingDraft draft) {
@@ -157,6 +191,27 @@ class AppController extends ChangeNotifier {
       _errorMessage = 'Something went wrong: $error';
     }
     notifyListeners();
+  }
+
+  List<Listing> _filtered(List<Listing> source) {
+    final byCategory = _categoryFilter == 'All'
+        ? source
+        : source
+              .where((listing) => listing.category == _categoryFilter)
+              .toList(growable: false);
+
+    if (_searchQuery.isEmpty) {
+      return byCategory;
+    }
+
+    return byCategory
+        .where((listing) {
+          final text =
+              '${listing.title} ${listing.description} ${listing.category} ${listing.location?.label ?? ''}'
+                  .toLowerCase();
+          return text.contains(_searchQuery);
+        })
+        .toList(growable: false);
   }
 
   @override

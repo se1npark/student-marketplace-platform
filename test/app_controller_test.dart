@@ -44,6 +44,59 @@ void main() {
     controller.dispose();
   });
 
+  test('search query filters listing text and campus pickup labels', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      usingDemoBackend: true,
+    );
+    await pumpEventQueue();
+
+    controller.setSearchQuery('library');
+
+    expect(
+      controller.listings.map((listing) => listing.id),
+      containsAll(['seed-charger', 'seed-service']),
+    );
+    expect(controller.listings, hasLength(2));
+
+    controller.setCategoryFilter('Electronics');
+
+    expect(controller.listings.single.id, 'seed-charger');
+    controller.dispose();
+  });
+
+  test(
+    'saved and own listing collections update from controller state',
+    () async {
+      final controller = AppController(
+        authRepository: MemoryAuthRepository.withDemoUser(),
+        listingRepository: MemoryListingRepository.withSeedData(),
+        deviceService: _FakeDeviceService(),
+        usingDemoBackend: true,
+      );
+      await pumpEventQueue();
+
+      await controller.signIn(
+        email: 'sein.park@student.mq.edu.au',
+        password: 'CampusCart1!',
+      );
+      await pumpEventQueue();
+
+      controller.toggleSaved('seed-charger');
+
+      expect(controller.savedListingCount, 1);
+      expect(controller.savedListings.single.title, contains('USB-C charger'));
+      expect(controller.myListings, hasLength(5));
+
+      controller.toggleSaved('seed-charger');
+
+      expect(controller.savedListings, isEmpty);
+      controller.dispose();
+    },
+  );
+
   test('requires a signed-in user before creating a listing', () async {
     final controller = AppController(
       authRepository: MemoryAuthRepository.withDemoUser(),

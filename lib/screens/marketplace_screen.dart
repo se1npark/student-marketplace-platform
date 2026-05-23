@@ -5,10 +5,19 @@ import 'package:provider/provider.dart';
 import '../campus_content.dart';
 import '../controllers/app_controller.dart';
 import '../models/listing.dart';
+import '../widgets/listing_image.dart';
+import 'listing_detail_screen.dart';
 import 'listing_form_screen.dart';
 
-class MarketplaceScreen extends StatelessWidget {
+class MarketplaceScreen extends StatefulWidget {
   const MarketplaceScreen({super.key});
+
+  @override
+  State<MarketplaceScreen> createState() => _MarketplaceScreenState();
+}
+
+class _MarketplaceScreenState extends State<MarketplaceScreen> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +54,30 @@ class MarketplaceScreen extends StatelessWidget {
           if (controller.errorMessage != null)
             _InlineError(message: controller.errorMessage!),
           const _CampusHero(),
-          _CategoryFilters(controller: controller),
-          Expanded(
-            child: controller.listings.isEmpty
-                ? const _EmptyMarketplace()
-                : ListView.builder(
-                    itemCount: controller.listings.length,
-                    itemBuilder: (context, index) {
-                      final listing = controller.listings[index];
-                      return ListingCard(
-                        listing: listing,
-                        canManage: listing.ownerId == user?.id,
-                        onEdit: () => _openListingForm(context, listing),
-                        onDelete: () => _confirmDelete(context, listing),
-                      );
-                    },
-                  ),
+          _MarketplaceControls(controller: controller),
+          Expanded(child: _ListingTabBody(index: _selectedIndex)),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.storefront_outlined),
+            selectedIcon: Icon(Icons.storefront),
+            label: 'Market',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.bookmark_border),
+            selectedIcon: Icon(Icons.bookmark),
+            label: 'Saved',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Mine',
           ),
         ],
       ),
@@ -80,34 +97,6 @@ class MarketplaceScreen extends StatelessWidget {
       MaterialPageRoute(builder: (_) => ListingFormScreen(listing: listing)),
     );
   }
-
-  static Future<void> _confirmDelete(
-    BuildContext context,
-    Listing listing,
-  ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete listing?'),
-        content: Text(listing.title),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton.icon(
-            onPressed: () => Navigator.of(context).pop(true),
-            icon: const Icon(Icons.delete),
-            label: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && context.mounted) {
-      await context.read<AppController>().deleteListing(listing.id);
-    }
-  }
 }
 
 class _CampusHero extends StatelessWidget {
@@ -119,7 +108,7 @@ class _CampusHero extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 146,
+      height: 150,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -135,8 +124,8 @@ class _CampusHero extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.08),
-                  Colors.black.withValues(alpha: 0.62),
+                  Colors.black.withValues(alpha: 0.12),
+                  Colors.black.withValues(alpha: 0.70),
                 ],
               ),
             ),
@@ -170,30 +159,153 @@ class _CampusHero extends StatelessWidget {
   }
 }
 
-class _CategoryFilters extends StatelessWidget {
-  const _CategoryFilters({required this.controller});
+class _MarketplaceControls extends StatelessWidget {
+  const _MarketplaceControls({required this.controller});
 
   final AppController controller;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 58,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          final category = controller.filterOptions[index];
-          return FilterChip(
-            label: Text(category),
-            selected: category == controller.categoryFilter,
-            onSelected: (_) => controller.setCategoryFilter(category),
-          );
-        },
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemCount: controller.filterOptions.length,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            key: const Key('listingSearchField'),
+            onChanged: controller.setSearchQuery,
+            decoration: const InputDecoration(
+              hintText: 'Search textbooks, chargers, services...',
+              prefixIcon: Icon(Icons.search),
+              isDense: true,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _MetricChip(
+                icon: Icons.inventory_2,
+                label: '${controller.totalListingCount} listings',
+              ),
+              const SizedBox(width: 8),
+              _MetricChip(
+                icon: Icons.bookmark,
+                label: '${controller.savedListingCount} saved',
+              ),
+              const SizedBox(width: 8),
+              _MetricChip(
+                icon: Icons.person,
+                label: '${controller.ownListingCount} mine',
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 42,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final category = controller.filterOptions[index];
+                return FilterChip(
+                  label: Text(category),
+                  selected: category == controller.categoryFilter,
+                  onSelected: (_) => controller.setCategoryFilter(category),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              itemCount: controller.filterOptions.length,
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class _ListingTabBody extends StatelessWidget {
+  const _ListingTabBody({required this.index});
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.watch<AppController>();
+    final listings = switch (index) {
+      0 => controller.listings,
+      1 => controller.savedListings,
+      _ => controller.myListings,
+    };
+
+    if (controller.isLoadingListings) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (listings.isEmpty) {
+      return _EmptyMarketplace(index: index);
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 96),
+      itemCount: listings.length,
+      itemBuilder: (context, index) {
+        final listing = listings[index];
+        return ListingCard(
+          listing: listing,
+          canManage: listing.ownerId == controller.user?.id,
+          saved: controller.isSaved(listing.id),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ListingDetailScreen(listing: listing),
+            ),
+          ),
+          onToggleSaved: () => controller.toggleSaved(listing.id),
+          onEdit: () => _openListingForm(context, listing),
+          onDelete: () => _confirmDelete(context, listing),
+        );
+      },
+    );
+  }
+
+  static Future<void> _openListingForm(BuildContext context, Listing? listing) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ListingFormScreen(listing: listing)),
+    );
+  }
+
+  static Future<void> _confirmDelete(
+    BuildContext context,
+    Listing listing,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete listing?'),
+        content: Text(listing.title),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.delete),
+            label: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      final messenger = ScaffoldMessenger.of(context);
+      final success = await context.read<AppController>().deleteListing(
+        listing.id,
+      );
+      if (success) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Listing deleted')),
+        );
+      }
+    }
   }
 }
 
@@ -202,12 +314,18 @@ class ListingCard extends StatelessWidget {
     super.key,
     required this.listing,
     required this.canManage,
+    required this.saved,
+    required this.onTap,
+    required this.onToggleSaved,
     required this.onEdit,
     required this.onDelete,
   });
 
   final Listing listing;
   final bool canManage;
+  final bool saved;
+  final VoidCallback onTap;
+  final VoidCallback onToggleSaved;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -218,148 +336,175 @@ class ListingCard extends StatelessWidget {
     final date = DateFormat('d MMM').format(listing.updatedAt);
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
                 borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 82,
+                  height: 82,
+                  child: ColoredBox(
+                    color: theme.colorScheme.primaryContainer,
+                    child: ListingImage(
+                      imagePath: listing.imagePath,
+                      fallbackIcon: Icons.sell,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: _ListingThumbnail(
-                imagePath: listing.imagePath,
-                color: theme.colorScheme.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          listing.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            listing.title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        listing.price == 0
-                            ? 'Free'
-                            : currency.format(listing.price),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w800,
+                        const SizedBox(width: 8),
+                        Text(
+                          listing.price == 0
+                              ? 'Free'
+                              : currency.format(listing.price),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    listing.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      _MetaChip(icon: Icons.category, label: listing.category),
-                      _MetaChip(icon: Icons.verified, label: listing.condition),
-                      _MetaChip(icon: Icons.schedule, label: date),
-                      if (listing.location != null)
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      listing.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
                         _MetaChip(
-                          icon: Icons.place,
-                          label: listing.location!.label,
+                          icon: Icons.category,
+                          label: listing.category,
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '${listing.ownerName}  ·  ${listing.contactEmail}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                        _MetaChip(
+                          icon: Icons.verified,
+                          label: listing.condition,
+                        ),
+                        _MetaChip(icon: Icons.schedule, label: date),
+                        if (listing.location != null)
+                          _MetaChip(
+                            icon: Icons.place,
+                            label: listing.location!.label,
+                          ),
+                      ],
                     ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${listing.ownerName}  ·  ${listing.contactEmail}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    tooltip: saved ? 'Unsave listing' : 'Save listing',
+                    onPressed: onToggleSaved,
+                    icon: Icon(saved ? Icons.bookmark : Icons.bookmark_border),
                   ),
+                  if (canManage)
+                    PopupMenuButton<_ListingAction>(
+                      tooltip: 'Listing actions',
+                      onSelected: (action) {
+                        switch (action) {
+                          case _ListingAction.edit:
+                            onEdit();
+                          case _ListingAction.delete:
+                            onDelete();
+                        }
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(
+                          value: _ListingAction.edit,
+                          child: ListTile(
+                            leading: Icon(Icons.edit),
+                            title: Text('Edit'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: _ListingAction.delete,
+                          child: ListTile(
+                            leading: Icon(Icons.delete),
+                            title: Text('Delete'),
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
-            ),
-            if (canManage)
-              PopupMenuButton<_ListingAction>(
-                tooltip: 'Listing actions',
-                onSelected: (action) {
-                  switch (action) {
-                    case _ListingAction.edit:
-                      onEdit();
-                    case _ListingAction.delete:
-                      onDelete();
-                  }
-                },
-                itemBuilder: (context) => const [
-                  PopupMenuItem(
-                    value: _ListingAction.edit,
-                    child: ListTile(
-                      leading: Icon(Icons.edit),
-                      title: Text('Edit'),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: _ListingAction.delete,
-                    child: ListTile(
-                      leading: Icon(Icons.delete),
-                      title: Text('Delete'),
-                    ),
-                  ),
-                ],
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ListingThumbnail extends StatelessWidget {
-  const _ListingThumbnail({required this.imagePath, required this.color});
+class _MetricChip extends StatelessWidget {
+  const _MetricChip({required this.icon, required this.label});
 
-  final String? imagePath;
-  final Color color;
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final path = imagePath;
-    final uri = path == null ? null : Uri.tryParse(path);
-    if (path != null && path.startsWith('assets/')) {
-      return Image.asset(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.photo, color: color),
-      );
-    }
-
-    if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {
-      return Image.network(
-        path!,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.photo, color: color),
-      );
-    }
-
-    return Icon(path == null ? Icons.sell : Icons.photo, color: color);
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -383,10 +528,13 @@ class _MetaChip extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -447,27 +595,45 @@ class _StatusStrip extends StatelessWidget {
 }
 
 class _EmptyMarketplace extends StatelessWidget {
-  const _EmptyMarketplace();
+  const _EmptyMarketplace({required this.index});
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.inventory_2_outlined,
-              size: 52,
-              color: theme.colorScheme.onSurfaceVariant,
+    final title = switch (index) {
+      1 => 'No saved listings',
+      2 => 'No listings from you yet',
+      _ => 'No listings match',
+    };
+    final icon = switch (index) {
+      1 => Icons.bookmark_border,
+      2 => Icons.person_outline,
+      _ => Icons.inventory_2_outlined,
+    };
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 120;
+        return Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(compact ? 8 : 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: compact ? 28 : 52,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                SizedBox(height: compact ? 6 : 12),
+                Text(title, style: theme.textTheme.titleMedium),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text('No listings yet', style: theme.textTheme.titleMedium),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

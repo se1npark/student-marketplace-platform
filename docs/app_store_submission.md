@@ -16,15 +16,15 @@ Campus Cart helps Macquarie students arrange small, local exchanges without usin
 
 Macquarie University describes its main campus as the Wallumattagal Campus, with green spaces, accommodation, lifestyle facilities and food outlets. The marketplace uses that campus context directly. Seed listings mention 1 Central Courtyard, The Hub and the Library so reviewers can immediately see that the app has been tailored for MQ rather than a generic eCommerce demo.
 
-Users can register or sign in, browse listings, filter by category, create a listing, attach their current location, optionally pick a photo from the device gallery, edit their own listings and delete listings after confirmation. The app includes Firebase Authentication and Cloud Firestore repository implementations, plus a demo backend fallback so the APK remains easy to test before final Firebase values are added.
+Users can register or sign in, request password reset feedback, browse listings, search the marketplace, filter by category, save listings, open a detail screen, create a listing, choose a campus pickup point, attach their current location, optionally pick a photo from the device gallery, edit their own listings and delete listings after confirmation. The app includes Firebase Authentication and Cloud Firestore repository implementations, plus a demo backend fallback so the APK remains easy to test before final Firebase values are added.
 
 ## Screenshot Images
 
 Recommended screenshots to upload:
 
-- Login screen: `docs/screenshots/01_login.png`
-- Marketplace feed: `docs/screenshots/02_marketplace.png`
-- New listing form: `docs/screenshots/03_new_listing.png`
+- Login screen: `docs/screenshots/ios/01_login.png`
+- Marketplace feed: `docs/screenshots/ios/02_marketplace.png`
+- New listing form: `docs/screenshots/ios/03_new_listing.png`
 
 ## Reviewer Information
 
@@ -38,7 +38,7 @@ You can also register a new account from the Register tab.
 Testing CRUD:
 
 - Create: tap the floating `Listing` button, enter title, description and price, optionally tap `Location` and `Photo`, then tap `Create listing`.
-- Read: sign in and view the marketplace feed. Use category chips such as Textbooks, Food, Electronics, Services and Other. Each category has at least one seeded MQ-campus listing.
+- Read: sign in and view the marketplace feed. Use search, Saved, Mine and category chips such as Textbooks, Food, Electronics, Services and Other. Each category has at least one seeded MQ-campus listing.
 - Update: open the three-dot menu on one of Sein Park's listings, tap `Edit`, change a field, then save.
 - Delete: open the three-dot menu on one of Sein Park's listings, tap `Delete`, then confirm in the dialog.
 
@@ -51,7 +51,7 @@ Known limitations:
 
 - The current repository contains placeholder Firebase options. Until real Firebase values are added, the app starts in demo backend mode.
 - Picked photos are stored as a local selected file path for assessment demonstration. A production version would upload images to Firebase Storage and store public download URLs in Firestore.
-- Device compatibility target: Android APK and Chrome web.
+- Device compatibility target: Android APK, Chrome web and iPhone-sized review screenshots. iOS deployment target is 15.0 for current Firebase iOS pods.
 
 ## App Capabilities and Data Collection
 

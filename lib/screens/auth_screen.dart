@@ -153,6 +153,17 @@ class _AuthScreenState extends State<AuthScreen> {
                             _registering ? 'Create account' : 'Sign in',
                           ),
                         ),
+                        if (!_registering) ...[
+                          const SizedBox(height: 8),
+                          TextButton.icon(
+                            key: const Key('resetPasswordButton'),
+                            onPressed: controller.isBusy
+                                ? null
+                                : _resetPassword,
+                            icon: const Icon(Icons.mark_email_read_outlined),
+                            label: const Text('Send password reset'),
+                          ),
+                        ],
                         if (controller.usingDemoBackend) ...[
                           const SizedBox(height: 8),
                           TextButton.icon(
@@ -198,6 +209,23 @@ class _AuthScreenState extends State<AuthScreen> {
     _emailController.text = 'sein.park@student.mq.edu.au';
     _passwordController.text = 'CampusCart1!';
     await _submit();
+  }
+
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+    if (!email.contains('@') || !email.contains('.')) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter your email first.')));
+      return;
+    }
+
+    final success = await context.read<AppController>().resetPassword(email);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset email requested.')),
+      );
+    }
   }
 }
 

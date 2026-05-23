@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:uuid/uuid.dart';
 
-import '../campus_content.dart';
 import '../models/campus_user.dart';
 import '../models/listing.dart';
 import 'listing_repository.dart';
@@ -35,6 +34,7 @@ class MemoryListingRepository implements ListingRepository {
             longitude: 151.1126,
             label: '1 Central Courtyard',
           ),
+          imagePath: 'assets/images/item_notes.png',
         ),
         Listing(
           id: 'seed-coffee',
@@ -54,7 +54,7 @@ class MemoryListingRepository implements ListingRepository {
             longitude: 151.1126,
             label: 'The Hub at 1CC',
           ),
-          imagePath: CampusContent.campusHeroImageAsset,
+          imagePath: 'assets/images/item_cup.png',
         ),
         Listing(
           id: 'seed-charger',
@@ -74,6 +74,7 @@ class MemoryListingRepository implements ListingRepository {
             longitude: 151.1126,
             label: 'MQ Library',
           ),
+          imagePath: 'assets/images/item_charger.png',
         ),
         Listing(
           id: 'seed-service',
@@ -93,6 +94,7 @@ class MemoryListingRepository implements ListingRepository {
             longitude: 151.1126,
             label: 'Library study area',
           ),
+          imagePath: 'assets/images/item_testing.png',
         ),
         Listing(
           id: 'seed-umbrella',
@@ -112,6 +114,7 @@ class MemoryListingRepository implements ListingRepository {
             longitude: 151.1126,
             label: 'Metro side entrance',
           ),
+          imagePath: 'assets/images/item_umbrella.png',
         ),
       ],
     );

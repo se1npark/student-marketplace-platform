@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/app_controller.dart';
 import '../models/listing.dart';
+import '../widgets/listing_image.dart';
 
 class ListingFormScreen extends StatefulWidget {
   const ListingFormScreen({super.key, this.listing});
@@ -24,6 +25,24 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
   String? _imagePath;
 
   bool get _editing => widget.listing != null;
+
+  static const _campusPickupSpots = <ListingLocation>[
+    ListingLocation(
+      latitude: -33.7756,
+      longitude: 151.1126,
+      label: '1 Central Courtyard',
+    ),
+    ListingLocation(
+      latitude: -33.7756,
+      longitude: 151.1126,
+      label: 'MQ Library',
+    ),
+    ListingLocation(
+      latitude: -33.7756,
+      longitude: 151.1126,
+      label: 'Metro side entrance',
+    ),
+  ];
 
   @override
   void initState() {
@@ -64,6 +83,8 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
             children: [
               if (controller.errorMessage != null)
                 _FormError(message: controller.errorMessage!),
+              _PhotoPreview(imagePath: _imagePath),
+              const SizedBox(height: 16),
               TextFormField(
                 key: const Key('listingTitleField'),
                 controller: _titleController,
@@ -154,6 +175,24 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
+              Text(
+                'Campus pickup',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final spot in _campusPickupSpots)
+                    ChoiceChip(
+                      label: Text(spot.label),
+                      selected: _location?.label == spot.label,
+                      onSelected: (_) => setState(() => _location = spot),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -230,6 +269,11 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
         : await controller.createListing(draft);
 
     if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_editing ? 'Listing updated' : 'Listing created'),
+        ),
+      );
       Navigator.of(context).pop();
     }
   }
@@ -237,6 +281,49 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
   String _fileName(String path) {
     final parts = path.split(RegExp(r'[/\\]'));
     return parts.isEmpty ? path : parts.last;
+  }
+}
+
+class _PhotoPreview extends StatelessWidget {
+  const _PhotoPreview({required this.imagePath});
+
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: AspectRatio(
+        aspectRatio: 16 / 8,
+        child: ColoredBox(
+          color: theme.colorScheme.primaryContainer,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ListingImage(
+                imagePath: imagePath,
+                fallbackIcon: Icons.add_photo_alternate,
+              ),
+              if (imagePath == null)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    color: Colors.black.withValues(alpha: 0.45),
+                    child: const Text(
+                      'Optional listing photo',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -11,6 +11,7 @@ void main() {
   testWidgets('auth form validates email and password before sign in', (
     tester,
   ) async {
+    _setIphoneViewport(tester);
     final dependencies = AppDependencies(
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
@@ -29,6 +30,7 @@ void main() {
   });
 
   testWidgets('student can sign in and create a listing', (tester) async {
+    _setIphoneViewport(tester);
     final dependencies = AppDependencies(
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository(),
@@ -39,10 +41,9 @@ void main() {
     await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('useDemoLoginButton')));
-    await tester.pumpAndSettle();
+    await _useDemoLogin(tester);
 
-    expect(find.text('No listings yet'), findsOneWidget);
+    expect(find.text('No listings match'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('addListingButton')));
     await tester.pumpAndSettle();
@@ -57,11 +58,13 @@ void main() {
     );
     await tester.enterText(find.byKey(const Key('listingPriceField')), '35');
 
+    await _scrollUntilVisible(tester, const Key('captureLocationButton'));
     await tester.tap(find.byKey(const Key('captureLocationButton')));
     await tester.pumpAndSettle();
 
     expect(find.text('Library lawn'), findsOneWidget);
 
+    await _scrollUntilVisible(tester, const Key('saveListingButton'));
     await tester.tap(find.byKey(const Key('saveListingButton')));
     await tester.pumpAndSettle();
 
@@ -71,6 +74,7 @@ void main() {
   });
 
   testWidgets('student can edit and delete their own listing', (tester) async {
+    _setIphoneViewport(tester);
     final dependencies = AppDependencies(
       authRepository: MemoryAuthRepository.withDemoUser(),
       listingRepository: MemoryListingRepository.withSeedData(),
@@ -81,7 +85,9 @@ void main() {
     await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('useDemoLoginButton')));
+    await _useDemoLogin(tester);
+
+    await tester.enterText(find.byKey(const Key('listingSearchField')), 'cup');
     await tester.pumpAndSettle();
 
     expect(find.text('Reusable cup for The Hub'), findsOneWidget);
@@ -94,6 +100,7 @@ void main() {
       find.byKey(const Key('listingTitleField')),
       'Reusable cup and lid for The Hub',
     );
+    await _scrollUntilVisible(tester, const Key('saveListingButton'));
     await tester.tap(find.byKey(const Key('saveListingButton')));
     await tester.pumpAndSettle();
 
@@ -109,6 +116,66 @@ void main() {
 
     expect(find.text('Reusable cup and lid for The Hub'), findsNothing);
   });
+
+  testWidgets('student can search, open details, and save a listing', (
+    tester,
+  ) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+
+    await _useDemoLogin(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('listingSearchField')),
+      'charger',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('USB-C charger for Library study'), findsOneWidget);
+    expect(find.text('Reusable cup for The Hub'), findsNothing);
+
+    await tester.tap(find.text('USB-C charger for Library study'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Listing details'), findsOneWidget);
+    expect(find.text('Pickup point'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Save listing'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Unsave listing'), findsOneWidget);
+  });
+}
+
+void _setIphoneViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(390, 844);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+Future<void> _useDemoLogin(WidgetTester tester) async {
+  final button = find.byKey(const Key('useDemoLoginButton'));
+  await tester.ensureVisible(button);
+  await tester.tap(button);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _scrollUntilVisible(WidgetTester tester, Key key) async {
+  final target = find.byKey(key);
+  for (var i = 0; i < 8 && tester.any(target) == false; i += 1) {
+    await tester.drag(find.byType(ListView).last, const Offset(0, -280));
+    await tester.pumpAndSettle();
+  }
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
 }
 
 Future<void> _openListingActions(

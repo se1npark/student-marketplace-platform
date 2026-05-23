@@ -49,4 +49,18 @@ void main() {
       throwsA(isA<AuthException>()),
     );
   });
+
+  test('password reset validates registered demo email', () async {
+    final repository = MemoryAuthRepository.withDemoUser();
+
+    await expectLater(
+      repository.resetPassword('sein.park@student.mq.edu.au'),
+      completes,
+    );
+
+    await expectLater(
+      repository.resetPassword('missing@student.mq.edu.au'),
+      throwsA(isA<AuthException>()),
+    );
+  });
 }
