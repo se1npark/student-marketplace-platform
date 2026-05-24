@@ -31,6 +31,36 @@ void main() {
     expect(map['location'], isA<Map<String, dynamic>>());
   });
 
+  test('copyWith preserves unchanged fields', () {
+    final original = Listing(
+      id: 'test-1',
+      title: 'Original title',
+      description: 'Original description',
+      category: 'Textbooks',
+      condition: 'Good',
+      price: 20,
+      ownerId: 'owner-1',
+      ownerName: 'Jordan Lee',
+      contactEmail: 'jordan@student.mq.edu.au',
+      createdAt: DateTime(2026, 5, 1),
+      updatedAt: DateTime(2026, 5, 1),
+      location: const ListingLocation(
+        latitude: -33.7756,
+        longitude: 151.1126,
+        label: 'Library',
+      ),
+    );
+
+    final updated = original.copyWith(title: 'Updated title', price: 25);
+
+    expect(updated.title, 'Updated title');
+    expect(updated.price, 25);
+    expect(updated.id, original.id);
+    expect(updated.description, original.description);
+    expect(updated.ownerId, original.ownerId);
+    expect(updated.location?.label, original.location?.label);
+  });
+
   test('listing derives a readable owner name from student email fallback', () {
     final listing = Listing.fromMap('listing-2', {
       'title': 'USB Charger',

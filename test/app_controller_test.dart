@@ -127,6 +127,50 @@ void main() {
     controller.dispose();
   });
 
+  test('sign out clears the current user', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await controller.signIn(
+      email: 'sein.park@students.mq.edu.au',
+      password: 'CampusCart1!',
+    );
+    await pumpEventQueue();
+
+    expect(controller.user, isNotNull);
+
+    await controller.signOut();
+    await pumpEventQueue();
+
+    expect(controller.user, isNull);
+    controller.dispose();
+  });
+
+  test('failed sign in surfaces an error message', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    final success = await controller.signIn(
+      email: 'sein.park@students.mq.edu.au',
+      password: 'wrongpassword',
+    );
+
+    expect(success, isFalse);
+    expect(controller.errorMessage, isNotNull);
+    expect(controller.errorMessage, contains('incorrect'));
+    controller.dispose();
+  });
+
   test('captures location and photo path through the device service', () async {
     final controller = AppController(
       authRepository: MemoryAuthRepository.withDemoUser(),

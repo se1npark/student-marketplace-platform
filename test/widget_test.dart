@@ -174,6 +174,92 @@ void main() {
     expect(find.text('Reusable cup and lid for The Hub'), findsNothing);
   });
 
+  testWidgets('student can register a new account', (tester) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+
+    await tester.tap(find.text('Register'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('authNameField')), 'Alex Chen');
+    await tester.enterText(
+      find.byKey(const Key('authEmailField')),
+      'alex.chen@students.mq.edu.au',
+    );
+    await tester.enterText(
+      find.byKey(const Key('authPasswordField')),
+      'SecurePass1!',
+    );
+    await tester.tap(find.byKey(const Key('authSubmitButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alex Chen'), findsOneWidget);
+    expect(find.text('Market'), findsOneWidget);
+  });
+
+  testWidgets('category filter shows only matching listings', (tester) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+
+    await _useDemoLogin(tester);
+
+    await tester.tap(find.widgetWithText(FilterChip, 'Textbooks'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('COMP3130 Android notes pack'), findsOneWidget);
+    expect(find.text('Reusable cup for The Hub'), findsNothing);
+  });
+
+  testWidgets('listing detail displays seller info and edit actions for own listing', (
+    tester,
+  ) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+
+    await _useDemoLogin(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('listingSearchField')),
+      'notes',
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('COMP3130 Android notes pack'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Listing details'), findsOneWidget);
+    expect(find.text('Contact seller'), findsOneWidget);
+    expect(find.text('Pickup point'), findsOneWidget);
+    expect(find.byTooltip('Listing actions'), findsOneWidget);
+  });
+
   testWidgets('student can search, open details, and save a listing', (
     tester,
   ) async {
