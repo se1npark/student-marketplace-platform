@@ -260,6 +260,86 @@ void main() {
     expect(find.byTooltip('Listing actions'), findsOneWidget);
   });
 
+  testWidgets('saved tab shows bookmarked listing', (tester) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+    await _useDemoLogin(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('listingSearchField')),
+      'cup',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Save listing'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('listingSearchField')),
+      '',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Saved'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reusable cup for The Hub'), findsOneWidget);
+  });
+
+  testWidgets('mine tab shows listings belonging to the signed-in user', (
+    tester,
+  ) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+    await _useDemoLogin(tester);
+
+    await tester.tap(find.text('Mine'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('30 min app testing swap'), findsOneWidget);
+    expect(find.text('No listings from you yet'), findsNothing);
+  });
+
+  testWidgets('signing out returns to the authentication screen', (
+    tester,
+  ) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+    await _useDemoLogin(tester);
+
+    expect(find.text('Market'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Sign out'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('authSubmitButton')), findsOneWidget);
+  });
+
   testWidgets('student can search, open details, and save a listing', (
     tester,
   ) async {

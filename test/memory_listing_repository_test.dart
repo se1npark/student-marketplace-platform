@@ -1,9 +1,27 @@
 import 'package:campus_cart/models/campus_user.dart';
 import 'package:campus_cart/models/listing.dart';
+import 'package:campus_cart/repositories/listing_repository.dart';
 import 'package:campus_cart/repositories/memory_listing_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('updateListing throws ListingException when listing does not exist', () {
+    final repository = MemoryListingRepository();
+
+    const draft = ListingDraft(
+      title: 'Ghost listing',
+      description: 'This listing does not exist.',
+      category: 'Other',
+      condition: 'Good',
+      price: 0,
+    );
+
+    expect(
+      () => repository.updateListing(id: 'nonexistent-id', draft: draft),
+      throwsA(isA<ListingException>()),
+    );
+  });
+
   test(
     'memory listing repository supports create, update, and delete',
     () async {

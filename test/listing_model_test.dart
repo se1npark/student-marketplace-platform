@@ -31,6 +31,18 @@ void main() {
     expect(map['location'], isA<Map<String, dynamic>>());
   });
 
+  test('fromMap falls back to safe defaults for missing fields', () {
+    final listing = Listing.fromMap('empty-id', {});
+
+    expect(listing.id, 'empty-id');
+    expect(listing.title, 'Untitled listing');
+    expect(listing.category, 'Other');
+    expect(listing.condition, 'Good');
+    expect(listing.price, 0.0);
+    expect(listing.location, isNull);
+    expect(listing.imagePath, isNull);
+  });
+
   test('copyWith preserves unchanged fields', () {
     final original = Listing(
       id: 'test-1',

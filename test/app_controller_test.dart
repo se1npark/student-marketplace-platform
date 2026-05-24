@@ -127,6 +127,85 @@ void main() {
     controller.dispose();
   });
 
+  test('createListing adds a listing owned by the signed-in user', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await controller.signIn(
+      email: 'sein.park@students.mq.edu.au',
+      password: 'CampusCart1!',
+    );
+    await pumpEventQueue();
+
+    const draft = ListingDraft(
+      title: 'Desk lamp',
+      description: 'Small lamp for late study.',
+      category: 'Other',
+      condition: 'Good',
+      price: 8,
+    );
+
+    final success = await controller.createListing(draft);
+    await pumpEventQueue();
+
+    expect(success, isTrue);
+    expect(controller.listings, hasLength(1));
+    expect(controller.listings.single.title, 'Desk lamp');
+    expect(controller.listings.single.ownerId, 'demo-user-sein');
+    controller.dispose();
+  });
+
+  test('deleteListing removes the listing from the feed', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository.withSeedData(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+    await pumpEventQueue();
+
+    expect(controller.listings, hasLength(5));
+
+    final success = await controller.deleteListing('seed-textbook');
+    await pumpEventQueue();
+
+    expect(success, isTrue);
+    expect(controller.listings, hasLength(4));
+    expect(
+      controller.listings.any((l) => l.id == 'seed-textbook'),
+      isFalse,
+    );
+    controller.dispose();
+  });
+
+  test('clearError dismisses the current error message', () async {
+    final controller = AppController(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await controller.signIn(
+      email: 'sein.park@students.mq.edu.au',
+      password: 'wrongpassword',
+    );
+
+    expect(controller.errorMessage, isNotNull);
+
+    controller.clearError();
+
+    expect(controller.errorMessage, isNull);
+    controller.dispose();
+  });
+
   test('sign out clears the current user', () async {
     final controller = AppController(
       authRepository: MemoryAuthRepository.withDemoUser(),
