@@ -21,6 +21,7 @@ class CampusCartApp extends StatelessWidget {
         photoStorage: dependencies.photoStorage,
         usingDemoBackend: dependencies.usingDemoBackend,
         startupNotice: dependencies.startupNotice,
+        prefs: dependencies.prefs,
       ),
       child: MaterialApp(
         title: 'Campus Cart',

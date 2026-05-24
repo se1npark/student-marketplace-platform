@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'repositories/auth_repository.dart';
@@ -18,6 +19,7 @@ class AppDependencies {
     required this.photoStorage,
     required this.usingDemoBackend,
     this.startupNotice,
+    this.prefs,
   });
 
   final AuthRepository authRepository;
@@ -26,11 +28,13 @@ class AppDependencies {
   final ListingPhotoStorage photoStorage;
   final bool usingDemoBackend;
   final String? startupNotice;
+  final SharedPreferences? prefs;
 }
 
 Future<AppDependencies> buildDependencies() async {
   const forceDemoBackend = bool.fromEnvironment('DEMO_BACKEND');
   final deviceService = DeviceServiceImpl();
+  final prefs = await SharedPreferences.getInstance();
 
   if (forceDemoBackend) {
     return AppDependencies(
@@ -40,6 +44,7 @@ Future<AppDependencies> buildDependencies() async {
       photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
       startupNotice: 'Demo backend selected with DEMO_BACKEND.',
+      prefs: prefs,
     );
   }
 
@@ -53,6 +58,7 @@ Future<AppDependencies> buildDependencies() async {
         photoStorage: MemoryListingPhotoStorage(),
         usingDemoBackend: true,
         startupNotice: 'Firebase options are placeholders.',
+        prefs: prefs,
       );
     }
 
@@ -66,6 +72,7 @@ Future<AppDependencies> buildDependencies() async {
       deviceService: deviceService,
       photoStorage: CloudinaryListingPhotoStorage(),
       usingDemoBackend: false,
+      prefs: prefs,
     );
   } catch (error) {
     return AppDependencies(
@@ -75,6 +82,7 @@ Future<AppDependencies> buildDependencies() async {
       photoStorage: MemoryListingPhotoStorage(),
       usingDemoBackend: true,
       startupNotice: 'Firebase could not start: $error',
+      prefs: prefs,
     );
   }
 }

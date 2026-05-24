@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/campus_user.dart';
 import '../models/listing.dart';
@@ -17,10 +18,14 @@ class AppController extends ChangeNotifier {
     required ListingPhotoStorage photoStorage,
     required this.usingDemoBackend,
     this.startupNotice,
+    SharedPreferences? prefs,
   }) : _authRepository = authRepository,
        _listingRepository = listingRepository,
        _deviceService = deviceService,
-       _photoStorage = photoStorage {
+       _photoStorage = photoStorage,
+       _prefs = prefs {
+    final saved = prefs?.getStringList(_savedKey) ?? [];
+    _savedListingIds.addAll(saved);
     _authSubscription = _authRepository.authStateChanges().listen((user) {
       _user = user;
       notifyListeners();
@@ -35,10 +40,13 @@ class AppController extends ChangeNotifier {
     }, onError: _setError);
   }
 
+  static const _savedKey = 'saved_listing_ids';
+
   final AuthRepository _authRepository;
   final ListingRepository _listingRepository;
   final DeviceService _deviceService;
   final ListingPhotoStorage _photoStorage;
+  final SharedPreferences? _prefs;
   final bool usingDemoBackend;
   final String? startupNotice;
 
@@ -97,6 +105,7 @@ class AppController extends ChangeNotifier {
     } else {
       _savedListingIds.add(listingId);
     }
+    _prefs?.setStringList(_savedKey, _savedListingIds.toList());
     notifyListeners();
   }
 
