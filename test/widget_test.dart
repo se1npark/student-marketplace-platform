@@ -76,6 +76,59 @@ void main() {
     expect(find.text('Library lawn'), findsOneWidget);
   });
 
+  testWidgets('student can choose a pickup spot from the campus map', (
+    tester,
+  ) async {
+    _setIphoneViewport(tester);
+    final dependencies = AppDependencies(
+      authRepository: MemoryAuthRepository.withDemoUser(),
+      listingRepository: MemoryListingRepository(),
+      deviceService: _FakeDeviceService(),
+      photoStorage: MemoryListingPhotoStorage(),
+      usingDemoBackend: true,
+    );
+
+    await tester.pumpWidget(CampusCartApp(dependencies: dependencies));
+    await tester.pump();
+
+    await _useDemoLogin(tester);
+    await tester.tap(find.byKey(const Key('addListingButton')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('listingTitleField')),
+      'Campus meetup item',
+    );
+    await tester.enterText(
+      find.byKey(const Key('listingDescriptionField')),
+      'Pickup location chosen from the MQ campus map.',
+    );
+    await tester.enterText(find.byKey(const Key('listingPriceField')), '5');
+
+    await _scrollUntilVisible(tester, const Key('campusMapPickerButton'));
+    await tester.tap(find.byKey(const Key('campusMapPickerButton')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('campusMapSearchField')),
+      'MUSE',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('campusMapPlace_MUSE')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirmCampusMapLocationButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('MUSE'), findsWidgets);
+
+    await _scrollUntilVisible(tester, const Key('saveListingButton'));
+    await tester.tap(find.byKey(const Key('saveListingButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Campus meetup item'), findsOneWidget);
+    expect(find.text('MUSE'), findsOneWidget);
+  });
+
   testWidgets('student can edit and delete their own listing', (tester) async {
     _setIphoneViewport(tester);
     final dependencies = AppDependencies(
